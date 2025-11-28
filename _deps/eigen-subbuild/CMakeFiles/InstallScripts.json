@@ -1,0 +1,7 @@
+{
+	"InstallScripts" : 
+	[
+		"/Users/junwei/workspace/demos/math_utils/_deps/eigen-subbuild/cmake_install.cmake"
+	],
+	"Parallel" : false
+}
