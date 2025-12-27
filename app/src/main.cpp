@@ -1,8 +1,7 @@
-#include <iostream>
-#include <corelib/simple.h>
+#include <corelib/simple.hpp>
 #include <spdlog/spdlog.h>
 int main()
 {
-    spdlog::info("sum is {}", corelib::add(1, 43));
+    spdlog::info("sum is {:.2f}", corelib::add(1.2, 43.3));
     return 0;
 }

@@ -20,7 +20,9 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 #  更新CPM到最新版本
 
 include("${CMAKE_CURRENT_SOURCE_DIR}/CPM.cmake")
-
+CPMAddPackage("gh:google/googletest@1.17.0")
+# 开启测试
+enable_testing()
 add_subdirectory(libs/core)
 
 add_subdirectory(app)
