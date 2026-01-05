@@ -1,4 +1,35 @@
-Checks: 'modernize-*,readability-*,bugprone-*,performance-*'
-WarningsAsErrors: ''
-HeaderFilterRegex: ''
+---
+# 1. 基础配置
 FormatStyle: file
+
+# 2. 核心检查列表
+# 语法说明：
+# -* : 先禁用所有默认检查（为了白名单模式，更可控）
+# clang-analyzer-* : 静态分析，抓内存泄漏、空指针解引用（最重要）
+# bugprone-* : 抓容易导致 Bug 的逻辑错误
+# cppcoreguidelines-* : C++ 核心指南（强制初始化）
+# modernize-* : 强制使用现代 C++ 特性 (nullptr, override, auto 等)
+# performance-* : 性能优化建议
+# readability-* : 代码可读性建议
+#
+# 下面以 - 开头的（如 -modernize-use-trailing-return-type）是我们要特意排除的过于严格或恼人的检查
+Checks: >
+  -*, clang-analyzer-*, bugprone-*, cppcoreguidelines-*, modernize-*, performance-*, readability-*, -modernize-use-trailing-return-type, -cppcoreguidelines-avoid-magic-numbers, -readability-magic-numbers, -cppcoreguidelines-pro-bounds-pointer-arithmetic, -cppcoreguidelines-pro-type-vararg, -llvmlibc-*
+
+# 3. 将所有警告视为错误（强制你修改，否则红线报错）
+WarningsAsErrors: '*'
+
+# 4. 针对头文件的过滤（通常保持默认即可）
+HeaderFilterRegex: ''
+
+# 5. 具体的检查选项微调
+CheckOptions:
+# 强制要求类成员变量必须初始化
+- key: cppcoreguidelines-pro-type-member-init.IgnoreArrays
+  value: 'true'
+# 允许短的变量名（如 i, j, x, y），否则 readability 会报错
+- key: readability-identifier-length.MinimumVariableNameLength
+  value: '1'
+# 允许在循环中使用简短变量名
+- key: readability-identifier-length.IgnoredVariableNames
+  value: '^[i-z]$'
