@@ -1,7 +1,9 @@
 #include <corelib/simple.hpp>
 #include <spdlog/spdlog.h>
-int main()
+auto main() -> int
 {
-    spdlog::info("sum is {:.2f}", corelib::add(1.2, 43.3));
+    constexpr double num1=1.2;
+    constexpr double num2=43.3;
+    spdlog::info("sum is {:.2f}", corelib::add(num1, num2));
     return 0;
 }

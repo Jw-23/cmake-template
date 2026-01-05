@@ -1,0 +1,4 @@
+Checks: 'modernize-*,readability-*,bugprone-*,performance-*'
+WarningsAsErrors: ''
+HeaderFilterRegex: ''
+FormatStyle: file

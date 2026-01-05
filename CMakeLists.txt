@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 4.0.2)
 
 project(MathUtil VERSION 1.0 LANGUAGES CXX)
 
-include("${CMAKE_CURRENT_SOURCE_DIR}/CPM.cmake")
+
 
 # 自动生成compile_commands.json
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -22,6 +22,12 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 #  更新CPM到最新版本
+# file(DOWNLOAD 
+#      https://github.com/cpm-cmake/CPM.cmake/releases/download/v0.42.0/CPM.cmake 
+#      "${CMAKE_CURRENT_SOURCE_DIR}/CPM.cmake"
+# )
+
+
 
 include("${CMAKE_CURRENT_SOURCE_DIR}/CPM.cmake")
 CPMAddPackage("gh:google/googletest@1.17.0")
