@@ -1,5 +1,4 @@
 #pragma once
-#include <concepts>
 
 namespace corelib
 {
@@ -13,9 +12,9 @@ namespace corelib
 
     // 注意：这里不能用 HAdd auto a，因为那只能约束单个类型
     // 我们必须用 requires 联合约束两个参数
-    auto add(auto a, auto b)
-        requires HAdd<decltype(a), decltype(b)>
+    auto add(auto num1, auto num2)
+        requires HAdd<decltype(num1), decltype(num2)>
     {
-        return a + b;
+        return num1 + num2;
     }
 }
