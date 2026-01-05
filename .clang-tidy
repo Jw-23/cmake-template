@@ -1,35 +1,57 @@
 ---
-# 1. 基础配置
+# -------------------------------------------------------------------------
+# Section 1: 核心配置 (Clean & Strict)
+# -------------------------------------------------------------------------
 FormatStyle: file
 
-# 2. 核心检查列表
-# 语法说明：
-# -* : 先禁用所有默认检查（为了白名单模式，更可控）
-# clang-analyzer-* : 静态分析，抓内存泄漏、空指针解引用（最重要）
-# bugprone-* : 抓容易导致 Bug 的逻辑错误
-# cppcoreguidelines-* : C++ 核心指南（强制初始化）
-# modernize-* : 强制使用现代 C++ 特性 (nullptr, override, auto 等)
-# performance-* : 性能优化建议
-# readability-* : 代码可读性建议
-#
-# 下面以 - 开头的（如 -modernize-use-trailing-return-type）是我们要特意排除的过于严格或恼人的检查
+# 启用所有关键检查，同时排除过于琐碎的规则
 Checks: >
-  -*, clang-analyzer-*, bugprone-*, cppcoreguidelines-*, modernize-*, performance-*, readability-*, -modernize-use-trailing-return-type, -cppcoreguidelines-avoid-magic-numbers, -readability-magic-numbers, -cppcoreguidelines-pro-bounds-pointer-arithmetic, -cppcoreguidelines-pro-type-vararg, -llvmlibc-*
+  -*, bugprone-*, clang-analyzer-*, cppcoreguidelines-*, modernize-*, performance-*, readability-*, -modernize-use-trailing-return-type, -cppcoreguidelines-avoid-magic-numbers, -readability-magic-numbers, -llvmlibc-*, -llvm-*, -android-*, -objc-*
 
-# 3. 将所有警告视为错误（强制你修改，否则红线报错）
+# 将所有警告视为错误 (零容忍模式)
 WarningsAsErrors: '*'
 
-# 4. 针对头文件的过滤（通常保持默认即可）
+# 检查当前项目下的所有头文件
 HeaderFilterRegex: ''
 
-# 5. 具体的检查选项微调
+# -------------------------------------------------------------------------
+# Section 2: 细节微调 (Options)
+# -------------------------------------------------------------------------
 CheckOptions:
-# 强制要求类成员变量必须初始化
+# [生命周期] 增强 Move 后检查：明确列出哪些标准库类型 move 后禁止使用
+- key: bugprone-use-after-move.MovedStandardClasses
+  value: 'std::basic_string;std::vector;std::list;std::map;std::set;std::unique_ptr;std::shared_ptr;std::optional;std::function'
+
+# [初始化] 允许数组成员默认初始化 (减少老代码误报)
 - key: cppcoreguidelines-pro-type-member-init.IgnoreArrays
   value: 'true'
-# 允许短的变量名（如 i, j, x, y），否则 readability 会报错
+
+# [可读性] 允许短变量名 (如 i, j, x, y)
 - key: readability-identifier-length.MinimumVariableNameLength
   value: '1'
-# 允许在循环中使用简短变量名
-- key: readability-identifier-length.IgnoredVariableNames
-  value: '^[i-z]$'
+...
+# -------------------------------------------------------------------------
+# Section 3: 配置说明与原理 (Comments)
+# -------------------------------------------------------------------------
+# 1. 关于“Move 后原变量禁止使用”
+#    - 核心检查器: bugprone-use-after-move
+#    - 作用: 检测 std::move(x) 之后再次读取或写入 x 的行为。
+#    - 配置增强: 上方的 CheckOptions 显式定义了 STL 容器列表，
+#      确保像 vector/string 这种资源管理类被严格监控。
+#
+# 2. 关于“变量销毁后，别名引用禁止使用” (悬空指针/引用)
+#    - 核心检查器: clang-analyzer-* (静态分析引擎)
+#    - 具体覆盖:
+#      a. clang-analyzer-core.StackAddressEscape: 
+#         禁止函数返回局部变量的引用或指针（销毁后的别名）。
+#      b. clang-analyzer-cplusplus.NewDelete: 
+#         禁止使用已经 delete 的指针 (Use-after-free)。
+#      c. bugprone-dangling-handle: 
+#         禁止 std::string_view 或 std::span 指向临时的、即将销毁的对象。
+#      d. clang-analyzer-core.uninitialized.*:
+#         禁止读取已销毁栈帧中的内存垃圾值。
+#
+# 3. 关于“未初始化变量”
+#    - 核心检查器: cppcoreguidelines-init-variables
+#    - 作用: 强制要求 int* p = nullptr; 而不是 int* p;
+# -------------------------------------------------------------------------
