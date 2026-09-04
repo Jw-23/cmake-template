@@ -1,7 +1,7 @@
 # CMake C++ 项目模板
 
 一个可交互初始化的现代 C++ 模板。依赖由 CPM.cmake 管理，Google Test、
-Google Benchmark 和 spdlog 都可以按项目选择。
+Google Benchmark、spdlog、fmt 和 Eigen 都可以按项目选择。
 
 ## 一条命令创建项目
 
@@ -15,7 +15,9 @@ bash <(curl -fsSL https://raw.githubusercontent.com/Jw-23/cmake-template/main/in
 - C++ 标准（14、17、20 或 23）；
 - 是否启用 Google Test；
 - 是否启用 Google Benchmark；
-- 是否启用 spdlog。
+- 是否启用 spdlog；
+- 是否启用 fmt；
+- 是否启用 Eigen。
 
 完成后，脚本会清除模板仓库历史，在新目录创建 `main` 分支，暂存全部文件，
 并在本机已配置 Git 用户名和邮箱时创建初始提交。
@@ -31,6 +33,8 @@ CMAKE_CPP_STANDARD=23 \
 CMAKE_ENABLE_GTEST=yes \
 CMAKE_ENABLE_BENCHMARK=no \
 CMAKE_ENABLE_SPDLOG=yes \
+CMAKE_ENABLE_FMT=no \
+CMAKE_ENABLE_EIGEN=yes \
 bash <(curl -fsSL https://raw.githubusercontent.com/Jw-23/cmake-template/main/install.sh)
 ```
 
@@ -57,3 +61,15 @@ ctest --preset debug
 | `PROJECT_ENABLE_TESTING` | `ON` | 构建 Google Test 测试 |
 | `PROJECT_ENABLE_BENCHMARKS` | `OFF` | 构建 Google Benchmark 基准测试 |
 | `PROJECT_ENABLE_SPDLOG` | `ON` | 示例程序使用 spdlog |
+| `PROJECT_ENABLE_FMT` | `OFF` | 示例程序使用 fmt；与 spdlog 同时启用时共用 fmt |
+| `PROJECT_ENABLE_EIGEN` | `OFF` | 示例程序使用 Eigen |
+
+## C++ 标准与依赖版本
+
+模板会按照项目的 C++ 标准选择能由相应编译器构建的依赖版本，而不仅仅保证
+依赖头文件可以被项目使用：
+
+| C++ 标准 | Google Test | Google Benchmark | spdlog | fmt | Eigen |
+| --- | --- | --- | --- | --- | --- |
+| C++14 | 1.16.0 | 1.9.0 | 1.17.0 | 12.1.0 | 5.0.1 |
+| C++17/20/23 | 1.18.0 | 1.9.5 | 1.17.0 | 12.1.0 | 5.0.1 |

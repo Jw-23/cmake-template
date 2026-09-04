@@ -36,6 +36,13 @@ endif()
 
 set(CMAKE_CXX_STANDARD 20 CACHE STRING "C++ standard (14, 17, 20, or 23)")
 set_property(CACHE CMAKE_CXX_STANDARD PROPERTY STRINGS 14 17 20 23)
+set(PROJECT_SUPPORTED_CXX_STANDARDS 14 17 20 23)
+if(NOT CMAKE_CXX_STANDARD IN_LIST PROJECT_SUPPORTED_CXX_STANDARDS)
+  message(
+    FATAL_ERROR
+    "Unsupported C++ standard '${CMAKE_CXX_STANDARD}'. Choose 14, 17, 20, or 23."
+  )
+endif()
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
@@ -46,6 +53,8 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
 option(PROJECT_ENABLE_TESTING "Build tests with GoogleTest" ON)
 option(PROJECT_ENABLE_BENCHMARKS "Build benchmarks with Google Benchmark" OFF)
 option(PROJECT_ENABLE_SPDLOG "Use spdlog in the example application" ON)
+option(PROJECT_ENABLE_FMT "Use fmt in the example application" OFF)
+option(PROJECT_ENABLE_EIGEN "Use Eigen in the example application" OFF)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 include(ProjectOptions)

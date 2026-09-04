@@ -110,6 +110,8 @@ done
 prompt_boolean CMAKE_ENABLE_GTEST '是否引入 Google Test？' 'yes'
 prompt_boolean CMAKE_ENABLE_BENCHMARK '是否引入 Google Benchmark？' 'no'
 prompt_boolean CMAKE_ENABLE_SPDLOG '是否引入 spdlog？' 'yes'
+prompt_boolean CMAKE_ENABLE_FMT '是否引入 fmt？' 'no'
+prompt_boolean CMAKE_ENABLE_EIGEN '是否引入 Eigen？' 'no'
 
 if [[ -e "$CMAKE_PROJECT_DIR" ]]; then
   [[ -d "$CMAKE_PROJECT_DIR" ]] || fail "目标路径已存在且不是目录: ${CMAKE_PROJECT_DIR}"
@@ -154,6 +156,8 @@ sed -i.bak \
   -e "s/option(PROJECT_ENABLE_TESTING \"Build tests with GoogleTest\" ON)/option(PROJECT_ENABLE_TESTING \"Build tests with GoogleTest\" ${CMAKE_ENABLE_GTEST})/" \
   -e "s/option(PROJECT_ENABLE_BENCHMARKS \"Build benchmarks with Google Benchmark\" OFF)/option(PROJECT_ENABLE_BENCHMARKS \"Build benchmarks with Google Benchmark\" ${CMAKE_ENABLE_BENCHMARK})/" \
   -e "s/option(PROJECT_ENABLE_SPDLOG \"Use spdlog in the example application\" ON)/option(PROJECT_ENABLE_SPDLOG \"Use spdlog in the example application\" ${CMAKE_ENABLE_SPDLOG})/" \
+  -e "s/option(PROJECT_ENABLE_FMT \"Use fmt in the example application\" OFF)/option(PROJECT_ENABLE_FMT \"Use fmt in the example application\" ${CMAKE_ENABLE_FMT})/" \
+  -e "s/option(PROJECT_ENABLE_EIGEN \"Use Eigen in the example application\" OFF)/option(PROJECT_ENABLE_EIGEN \"Use Eigen in the example application\" ${CMAKE_ENABLE_EIGEN})/" \
   "$cmake_file"
 rm -f "${cmake_file}.bak"
 
@@ -163,6 +167,8 @@ sed \
   -e "s/@GTEST_ENABLED@/${CMAKE_ENABLE_GTEST}/g" \
   -e "s/@BENCHMARK_ENABLED@/${CMAKE_ENABLE_BENCHMARK}/g" \
   -e "s/@SPDLOG_ENABLED@/${CMAKE_ENABLE_SPDLOG}/g" \
+  -e "s/@FMT_ENABLED@/${CMAKE_ENABLE_FMT}/g" \
+  -e "s/@EIGEN_ENABLED@/${CMAKE_ENABLE_EIGEN}/g" \
   "${CMAKE_PROJECT_DIR}/README.project.md.in" > "${CMAKE_PROJECT_DIR}/README.md"
 
 rm -f \
@@ -191,7 +197,7 @@ fi
 
 note ''
 note "项目 ${CMAKE_PROJECT_NAME} 创建完成：${CMAKE_PROJECT_DIR}"
-note "C++${CMAKE_CPP_STANDARD} | Google Test ${CMAKE_ENABLE_GTEST} | Benchmark ${CMAKE_ENABLE_BENCHMARK} | spdlog ${CMAKE_ENABLE_SPDLOG}"
+note "C++${CMAKE_CPP_STANDARD} | Google Test ${CMAKE_ENABLE_GTEST} | Benchmark ${CMAKE_ENABLE_BENCHMARK} | spdlog ${CMAKE_ENABLE_SPDLOG} | fmt ${CMAKE_ENABLE_FMT} | Eigen ${CMAKE_ENABLE_EIGEN}"
 note "$commit_status"
 note ''
 note '下一步：'

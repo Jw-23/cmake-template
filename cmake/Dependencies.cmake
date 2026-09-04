@@ -1,24 +1,43 @@
-if(NOT PROJECT_ENABLE_TESTING AND NOT PROJECT_ENABLE_BENCHMARKS AND NOT PROJECT_ENABLE_SPDLOG)
+if(NOT PROJECT_ENABLE_TESTING
+   AND NOT PROJECT_ENABLE_BENCHMARKS
+   AND NOT PROJECT_ENABLE_SPDLOG
+   AND NOT PROJECT_ENABLE_FMT
+   AND NOT PROJECT_ENABLE_EIGEN
+)
   return()
 endif()
 
 include("${CMAKE_CURRENT_LIST_DIR}/../CPM.cmake")
 
+if(CMAKE_CXX_STANDARD LESS 17)
+  # These are the newest release lines that build with a C++14-only compiler.
+  set(PROJECT_GOOGLETEST_VERSION 1.16.0)
+  set(PROJECT_BENCHMARK_VERSION 1.9.0)
+else()
+  set(PROJECT_GOOGLETEST_VERSION 1.18.0)
+  set(PROJECT_BENCHMARK_VERSION 1.9.5)
+endif()
+
+set(PROJECT_SPDLOG_VERSION 1.17.0)
+set(PROJECT_FMT_VERSION 12.1.0)
+set(PROJECT_EIGEN_VERSION 5.0.1)
+
+message(
+  STATUS
+  "Dependency compatibility: C++${CMAKE_CXX_STANDARD}, "
+  "GoogleTest ${PROJECT_GOOGLETEST_VERSION}, "
+  "Benchmark ${PROJECT_BENCHMARK_VERSION}, "
+  "spdlog ${PROJECT_SPDLOG_VERSION}, "
+  "fmt ${PROJECT_FMT_VERSION}, "
+  "Eigen ${PROJECT_EIGEN_VERSION}"
+)
+
 if(PROJECT_ENABLE_TESTING)
-  if(CMAKE_CXX_STANDARD LESS 17)
-    # GoogleTest 1.18 requires C++17; 1.12.1 supports C++14 projects.
-    set(PROJECT_GOOGLETEST_VERSION 1.12.1)
-    set(PROJECT_GOOGLETEST_TAG release-1.12.1)
-  else()
-    set(PROJECT_GOOGLETEST_VERSION 1.18.0)
-    set(PROJECT_GOOGLETEST_TAG v1.18.0)
-  endif()
 
   CPMAddPackage(
     NAME googletest
     GITHUB_REPOSITORY google/googletest
     VERSION ${PROJECT_GOOGLETEST_VERSION}
-    GIT_TAG ${PROJECT_GOOGLETEST_TAG}
     OPTIONS "INSTALL_GTEST OFF" "gtest_force_shared_crt ON"
   )
 endif()
@@ -27,16 +46,53 @@ if(PROJECT_ENABLE_BENCHMARKS)
   CPMAddPackage(
     NAME benchmark
     GITHUB_REPOSITORY google/benchmark
-    VERSION 1.9.5
+    VERSION ${PROJECT_BENCHMARK_VERSION}
     OPTIONS "BENCHMARK_ENABLE_TESTING OFF" "BENCHMARK_ENABLE_INSTALL OFF"
   )
 endif()
 
+if(PROJECT_ENABLE_FMT)
+  CPMAddPackage(
+    NAME fmt
+    GITHUB_REPOSITORY fmtlib/fmt
+    VERSION ${PROJECT_FMT_VERSION}
+    GIT_TAG ${PROJECT_FMT_VERSION}
+    OPTIONS "FMT_TEST OFF" "FMT_DOC OFF" "FMT_INSTALL OFF"
+  )
+endif()
+
 if(PROJECT_ENABLE_SPDLOG)
+  if(PROJECT_ENABLE_FMT)
+    set(PROJECT_SPDLOG_FMT_OPTION "SPDLOG_FMT_EXTERNAL ON")
+  else()
+    set(PROJECT_SPDLOG_FMT_OPTION "SPDLOG_FMT_EXTERNAL OFF")
+  endif()
+
   CPMAddPackage(
     NAME spdlog
     GITHUB_REPOSITORY gabime/spdlog
-    VERSION 1.17.0
-    OPTIONS "SPDLOG_BUILD_EXAMPLE OFF" "SPDLOG_BUILD_TESTS OFF" "SPDLOG_INSTALL OFF"
+    VERSION ${PROJECT_SPDLOG_VERSION}
+    OPTIONS
+      "SPDLOG_BUILD_EXAMPLE OFF"
+      "SPDLOG_BUILD_TESTS OFF"
+      "SPDLOG_INSTALL OFF"
+      "${PROJECT_SPDLOG_FMT_OPTION}"
   )
+endif()
+
+if(PROJECT_ENABLE_EIGEN)
+  CPMAddPackage(
+    NAME eigen
+    GIT_REPOSITORY https://gitlab.com/libeigen/eigen.git
+    GIT_TAG ${PROJECT_EIGEN_VERSION}
+    DOWNLOAD_ONLY YES
+  )
+
+  if(NOT TARGET Eigen3::Eigen)
+    add_library(project_eigen INTERFACE)
+    add_library(Eigen3::Eigen ALIAS project_eigen)
+    target_include_directories(
+      project_eigen SYSTEM INTERFACE "${eigen_SOURCE_DIR}"
+    )
+  endif()
 endif()
