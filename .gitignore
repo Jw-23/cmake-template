@@ -1,2 +1,20 @@
+# Build output
 /build/
+/cmake-build-*/
+/out/
+
+# CMake/CPM caches
 /.cache/
+/.cpm/
+/compile_commands.json
+
+# Editors and operating systems
+/.idea/
+/.vscode/
+.DS_Store
+Thumbs.db
+
+# Generated files
+*.user
+*.swp
+*.tmp

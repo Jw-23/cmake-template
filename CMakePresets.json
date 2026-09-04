@@ -1,10 +1,15 @@
 {
   "version": 3,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 24,
+    "patch": 0
+  },
   "configurePresets": [
     {
       "name": "base",
       "hidden": true,
-      "generator": "Ninja", 
+      "generator": "Ninja",
       "binaryDir": "${sourceDir}/build/${presetName}",
       "cacheVariables": {
         "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
@@ -12,29 +17,44 @@
     },
     {
       "name": "debug",
-      "displayName": "Debug Mode",
+      "displayName": "Debug",
       "inherits": "base",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug",
-        "CMAKE_CXX_FLAGS": "-g -O0 -Wall"
+        "CMAKE_BUILD_TYPE": "Debug"
       }
     },
     {
       "name": "release",
-      "displayName": "Release Mode",
+      "displayName": "Release",
       "inherits": "base",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release",
-        "CMAKE_CXX_FLAGS": "-O3 -DNDEBUG"
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "debug",
+      "configurePreset": "debug"
+    },
+    {
+      "name": "release",
+      "configurePreset": "release"
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "debug",
+      "configurePreset": "debug",
+      "output": {
+        "outputOnFailure": true
       }
     },
     {
-      "name": "profiling",
-      "displayName": "Profiling Mode (Instruments)",
-      "inherits": "base",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "RelWithDebInfo",
-        "CMAKE_CXX_FLAGS": "-O3 -g -fno-omit-frame-pointer"
+      "name": "release",
+      "configurePreset": "release",
+      "output": {
+        "outputOnFailure": true
       }
     }
   ]

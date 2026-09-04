@@ -1,0 +1,43 @@
+# @PROJECT_NAME@
+
+一个使用 CMake 与 CPM.cmake 的现代 C++ 项目。
+
+## 初始化配置
+
+| 配置 | 值 |
+| --- | --- |
+| C++ 标准 | C++@CPP_STANDARD@ |
+| Google Test | @GTEST_ENABLED@ |
+| Google Benchmark | @BENCHMARK_ENABLED@ |
+| spdlog | @SPDLOG_ENABLED@ |
+
+这些配置是默认值，仍可在配置阶段通过 `-DPROJECT_ENABLE_TESTING=ON/OFF`、
+`-DPROJECT_ENABLE_BENCHMARKS=ON/OFF` 和 `-DPROJECT_ENABLE_SPDLOG=ON/OFF` 覆盖。
+
+## 构建
+
+需要 CMake 3.24+、支持所选 C++ 标准的编译器、Git 和 Ninja。
+
+```bash
+cmake --preset debug
+cmake --build --preset debug
+./build/debug/bin/@PROJECT_NAME@
+```
+
+## 测试
+
+启用 Google Test 后：
+
+```bash
+ctest --preset debug
+```
+
+## Benchmark
+
+启用 Google Benchmark 后，建议使用 Release 构建：
+
+```bash
+cmake --preset release
+cmake --build --preset release --target project_benchmarks
+./build/release/bin/@PROJECT_NAME@_benchmarks
+```

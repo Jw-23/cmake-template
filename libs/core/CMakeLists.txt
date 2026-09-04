@@ -1,14 +1,11 @@
+add_library(project_core src/simple.cpp)
+add_library(project::core ALIAS project_core)
 
-add_library(CoreLib SHARED src/simple.cpp)
+target_include_directories(
+  project_core
+  PUBLIC
+    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+    "$<INSTALL_INTERFACE:include>"
+)
 
-target_include_directories(CoreLib PUBLIC include)
-
-
-add_library(Math::Core ALIAS CoreLib)
-
-add_executable(corelibtests tests/test_add.cpp)
-
-target_link_libraries(corelibtests PRIVATE GTest::gtest_main Math::Core)
-
-include(GoogleTest)
-gtest_discover_tests(corelibtests)
+target_link_libraries(project_core PRIVATE project_options project_warnings)
