@@ -1,53 +1,56 @@
-# CMake C++ 项目模板
+# CMake C++ Project Template
 
-一个可交互初始化的现代 C++ 模板。依赖由 CPM.cmake 管理，Google Test、
-Google Benchmark、spdlog、fmt 和 Eigen 都可以按项目选择。
+An interactive modern C++ project template powered by CMake and CPM.cmake.
+GoogleTest, Google Benchmark, spdlog, fmt, and Eigen are optional.
 
-## 一条命令创建项目
+## Create a project
 
 ```bash
 bash <(curl -fsSL https://raw.githubusercontent.com/Jw-23/cmake-template/main/install.sh)
 ```
 
-脚本会依次询问：
+The installer asks for:
 
-- 项目名称和创建目录；
-- C++ 标准（14、17、20 或 23）；
-- 是否启用 Google Test；
-- 是否启用 Google Benchmark；
-- 是否启用 spdlog；
-- 是否启用 fmt；
-- 是否启用 Eigen。
+- the project name and destination directory;
+- the C++ standard: 14, 17, 20, or 23;
+- whether to enable GoogleTest;
+- whether to enable Google Benchmark;
+- whether to enable spdlog;
+- whether to enable fmt;
+- whether to enable Eigen.
 
-完成后，脚本会自动配置 Debug 构建并生成 `build/compile_commands.json`，清除
-模板仓库历史，在新目录创建 `main` 分支，暂存全部文件，并在本机已配置 Git
-用户名和邮箱时创建初始提交。
+It then configures a Debug build, generates `build/compile_commands.json`,
+removes the template repository history, initializes a new `main` branch, and
+stages all generated files. If Git user identity is configured, it also creates
+the initial commit.
 
-## 无交互用法
+## Non-interactive usage
 
-所有问题都能通过环境变量预先回答，适合脚本或 CI：
+Every prompt can be supplied through environment variables:
 
 ```bash
 CMAKE_PROJECT_NAME=my_app \
 CMAKE_PROJECT_DIR=./my_app \
-CMAKE_CPP_STANDARD=23 \
+CMAKE_CPP_STANDARD=14 \
 CMAKE_ENABLE_GTEST=yes \
-CMAKE_ENABLE_BENCHMARK=no \
+CMAKE_ENABLE_BENCHMARK=yes \
 CMAKE_ENABLE_SPDLOG=yes \
 CMAKE_ENABLE_FMT=no \
 CMAKE_ENABLE_EIGEN=yes \
 bash <(curl -fsSL https://raw.githubusercontent.com/Jw-23/cmake-template/main/install.sh)
 ```
 
-可用的高级变量：
+Advanced environment variables:
 
-- `CMAKE_TEMPLATE_REPOSITORY`：模板 Git 地址；
-- `CMAKE_TEMPLATE_REF`：分支或标签，默认为 `main`；
-- `CMAKE_TEMPLATE_SOURCE_DIR`：直接使用本地模板目录，主要用于开发与离线测试。
+- `CMAKE_TEMPLATE_REPOSITORY`: template Git URL;
+- `CMAKE_TEMPLATE_REF`: branch or tag, defaults to `main`;
+- `CMAKE_TEMPLATE_SOURCE_DIR`: local template directory for development or
+  offline testing.
 
-## 直接使用模板
+## Use the repository directly
 
-仓库本身也是一个有效项目，默认使用 C++20，并启用 Google Test 和 spdlog：
+The repository is a valid project by itself. It defaults to C++20 with
+GoogleTest and spdlog enabled:
 
 ```bash
 cmake --preset debug
@@ -55,22 +58,22 @@ cmake --build --preset debug
 ctest --preset debug
 ```
 
-可用的 CMake 选项：
+Available CMake options:
 
-| 选项 | 默认值 | 说明 |
+| Option | Default | Description |
 | --- | --- | --- |
-| `PROJECT_ENABLE_TESTING` | `ON` | 构建 Google Test 测试 |
-| `PROJECT_ENABLE_BENCHMARKS` | `OFF` | 构建 Google Benchmark 基准测试 |
-| `PROJECT_ENABLE_SPDLOG` | `ON` | 示例程序使用 spdlog |
-| `PROJECT_ENABLE_FMT` | `OFF` | 示例程序使用 fmt；与 spdlog 同时启用时共用 fmt |
-| `PROJECT_ENABLE_EIGEN` | `OFF` | 示例程序使用 Eigen |
+| `PROJECT_ENABLE_TESTING` | `ON` | Build the GoogleTest test suite |
+| `PROJECT_ENABLE_BENCHMARKS` | `OFF` | Build Google Benchmark targets |
+| `PROJECT_ENABLE_SPDLOG` | `ON` | Use spdlog in the example application |
+| `PROJECT_ENABLE_FMT` | `OFF` | Use fmt; share it with spdlog when both are enabled |
+| `PROJECT_ENABLE_EIGEN` | `OFF` | Use Eigen in the example application |
 
-## C++ 标准与依赖版本
+## C++ compatibility
 
-模板会按照项目的 C++ 标准选择能由相应编译器构建的依赖版本，而不仅仅保证
-依赖头文件可以被项目使用：
+Dependency versions are selected so each dependency can itself be built by a
+compiler limited to the selected C++ standard.
 
-| C++ 标准 | Google Test | Google Benchmark | spdlog | fmt | Eigen |
+| C++ standard | GoogleTest | Google Benchmark | spdlog | fmt | Eigen |
 | --- | --- | --- | --- | --- | --- |
 | C++14 | 1.16.0 | 1.9.0 | 1.17.0 | 12.1.0 | 5.0.1 |
 | C++17/20/23 | 1.18.0 | 1.9.5 | 1.17.0 | 12.1.0 | 5.0.1 |

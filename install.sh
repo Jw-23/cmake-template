@@ -5,7 +5,7 @@ set -Eeuo pipefail
 readonly DEFAULT_REPOSITORY="https://github.com/Jw-23/cmake-template.git"
 
 fail() {
-  printf '错误: %s\n' "$*" >&2
+  printf 'Error: %s\n' "$*" >&2
   exit 1
 }
 
@@ -27,9 +27,9 @@ prompt_value() {
     return
   fi
 
-  has_tty || fail "非交互环境中缺少 ${variable_name}，请通过环境变量提供。"
+  has_tty || fail "${variable_name} is required in a non-interactive environment."
   printf '%s [%s]: ' "$prompt_text" "$default_value" > /dev/tty
-  IFS= read -r current_value < /dev/tty || fail "无法读取输入。"
+  IFS= read -r current_value < /dev/tty || fail "Unable to read input."
   printf -v "$variable_name" '%s' "${current_value:-$default_value}"
 }
 
@@ -37,10 +37,10 @@ normalize_boolean() {
   local value
   value="$(printf '%s' "$1" | tr '[:upper:]' '[:lower:]')"
   case "$value" in
-    y|yes|true|1|on|是)
+    y|yes|true|1|on)
       printf 'ON'
       ;;
-    n|no|false|0|off|否)
+    n|no|false|0|off)
       printf 'OFF'
       ;;
     *)
@@ -62,9 +62,9 @@ prompt_boolean() {
 
   while true; do
     if [[ -z "$current_value" ]]; then
-      has_tty || fail "非交互环境中缺少 ${variable_name}，请通过环境变量提供。"
+      has_tty || fail "${variable_name} is required in a non-interactive environment."
       printf '%s [%s]: ' "$prompt_text" "$hint" > /dev/tty
-      IFS= read -r current_value < /dev/tty || fail "无法读取输入。"
+      IFS= read -r current_value < /dev/tty || fail "Unable to read input."
       current_value="${current_value:-$default_answer}"
     fi
 
@@ -73,52 +73,52 @@ prompt_boolean() {
       return
     fi
 
-    has_tty || fail "${variable_name} 的值无效，请使用 yes/no。"
-    printf '请输入 yes 或 no。\n' > /dev/tty
+    has_tty || fail "${variable_name} is invalid; use yes or no."
+    printf 'Please enter yes or no.\n' > /dev/tty
     current_value=''
   done
 }
 
-command -v git >/dev/null 2>&1 || fail '未找到 git，请先安装 Git。'
-command -v cmake >/dev/null 2>&1 || fail '未找到 cmake，请先安装 CMake 3.24 或更高版本。'
-command -v ninja >/dev/null 2>&1 || fail '未找到 ninja，请先安装 Ninja。'
+command -v git >/dev/null 2>&1 || fail 'Git is required but was not found.'
+command -v cmake >/dev/null 2>&1 || fail 'CMake 3.24 or newer is required but was not found.'
+command -v ninja >/dev/null 2>&1 || fail 'Ninja is required but was not found.'
 
 while true; do
-  prompt_value CMAKE_PROJECT_NAME '项目名称' 'my_project'
+  prompt_value CMAKE_PROJECT_NAME 'Project name' 'my_project'
   if [[ "$CMAKE_PROJECT_NAME" =~ ^[A-Za-z][A-Za-z0-9_-]*$ ]]; then
     break
   fi
-  has_tty || fail 'CMAKE_PROJECT_NAME 必须以字母开头，且只能包含字母、数字、_ 和 -。'
-  printf '项目名称必须以字母开头，且只能包含字母、数字、_ 和 -。\n' > /dev/tty
+  has_tty || fail 'CMAKE_PROJECT_NAME must start with a letter and contain only letters, digits, underscores, and hyphens.'
+  printf 'The project name must start with a letter and contain only letters, digits, underscores, and hyphens.\n' > /dev/tty
   CMAKE_PROJECT_NAME=''
 done
 
-prompt_value CMAKE_PROJECT_DIR '项目创建目录' "./${CMAKE_PROJECT_NAME}"
+prompt_value CMAKE_PROJECT_DIR 'Destination directory' "./${CMAKE_PROJECT_NAME}"
 
 while true; do
-  prompt_value CMAKE_CPP_STANDARD 'C++ 标准（14/17/20/23）' '20'
+  prompt_value CMAKE_CPP_STANDARD 'C++ standard (14/17/20/23)' '20'
   case "$CMAKE_CPP_STANDARD" in
     14|17|20|23)
       break
       ;;
     *)
-      has_tty || fail 'CMAKE_CPP_STANDARD 只支持 14、17、20 或 23。'
-      printf '请选择 14、17、20 或 23。\n' > /dev/tty
+      has_tty || fail 'CMAKE_CPP_STANDARD must be 14, 17, 20, or 23.'
+      printf 'Choose 14, 17, 20, or 23.\n' > /dev/tty
       CMAKE_CPP_STANDARD=''
       ;;
   esac
 done
 
-prompt_boolean CMAKE_ENABLE_GTEST '是否引入 Google Test？' 'yes'
-prompt_boolean CMAKE_ENABLE_BENCHMARK '是否引入 Google Benchmark？' 'no'
-prompt_boolean CMAKE_ENABLE_SPDLOG '是否引入 spdlog？' 'yes'
-prompt_boolean CMAKE_ENABLE_FMT '是否引入 fmt？' 'no'
-prompt_boolean CMAKE_ENABLE_EIGEN '是否引入 Eigen？' 'no'
+prompt_boolean CMAKE_ENABLE_GTEST 'Enable GoogleTest?' 'yes'
+prompt_boolean CMAKE_ENABLE_BENCHMARK 'Enable Google Benchmark?' 'no'
+prompt_boolean CMAKE_ENABLE_SPDLOG 'Enable spdlog?' 'yes'
+prompt_boolean CMAKE_ENABLE_FMT 'Enable fmt?' 'no'
+prompt_boolean CMAKE_ENABLE_EIGEN 'Enable Eigen?' 'no'
 
 if [[ -e "$CMAKE_PROJECT_DIR" ]]; then
-  [[ -d "$CMAKE_PROJECT_DIR" ]] || fail "目标路径已存在且不是目录: ${CMAKE_PROJECT_DIR}"
+  [[ -d "$CMAKE_PROJECT_DIR" ]] || fail "The destination exists and is not a directory: ${CMAKE_PROJECT_DIR}"
   [[ -z "$(find "$CMAKE_PROJECT_DIR" -mindepth 1 -maxdepth 1 -print -quit)" ]] || \
-    fail "目标目录不是空目录: ${CMAKE_PROJECT_DIR}"
+    fail "The destination directory is not empty: ${CMAKE_PROJECT_DIR}"
 fi
 
 work_dir="$(mktemp -d "${TMPDIR:-/tmp}/cmake-template.XXXXXX")"
@@ -127,16 +127,16 @@ trap 'rm -rf "$work_dir"' EXIT
 
 if [[ -n "${CMAKE_TEMPLATE_SOURCE_DIR:-}" ]]; then
   [[ -f "${CMAKE_TEMPLATE_SOURCE_DIR}/CMakeLists.txt" ]] || \
-    fail "本地模板目录无效: ${CMAKE_TEMPLATE_SOURCE_DIR}"
-  note "正在读取本地模板 ${CMAKE_TEMPLATE_SOURCE_DIR} ..."
+    fail "Invalid local template directory: ${CMAKE_TEMPLATE_SOURCE_DIR}"
+  note "Reading the local template from ${CMAKE_TEMPLATE_SOURCE_DIR} ..."
   mkdir -p "$template_dir"
   cp -R "${CMAKE_TEMPLATE_SOURCE_DIR}/." "$template_dir/"
 else
   repository="${CMAKE_TEMPLATE_REPOSITORY:-$DEFAULT_REPOSITORY}"
   template_ref="${CMAKE_TEMPLATE_REF:-main}"
-  note "正在从 ${repository} 拉取模板（${template_ref}）..."
+  note "Fetching template ${template_ref} from ${repository} ..."
   git clone --quiet --depth 1 --branch "$template_ref" "$repository" "$template_dir" || \
-    fail '模板拉取失败，请检查网络、仓库地址或分支名称。'
+    fail 'Unable to fetch the template. Check the network, repository URL, and ref.'
 fi
 
 # Only remove known paths inside the mktemp-created copy.
@@ -177,9 +177,9 @@ rm -f \
   "${CMAKE_PROJECT_DIR}/README.project.md.in" \
   "${CMAKE_PROJECT_DIR}/install.sh"
 
-note '正在配置 Debug 构建并生成 build/compile_commands.json ...'
+note 'Configuring the Debug build and generating build/compile_commands.json ...'
 if ! cmake -S "$CMAKE_PROJECT_DIR" --preset debug; then
-  fail "CMake 配置失败。项目文件已保留在 ${CMAKE_PROJECT_DIR}，请检查上方错误。"
+  fail "CMake configuration failed. Project files remain in ${CMAKE_PROJECT_DIR}; review the error above."
 fi
 
 if git -C "$CMAKE_PROJECT_DIR" init --initial-branch=main --quiet 2>/dev/null; then
@@ -194,19 +194,19 @@ git -C "$CMAKE_PROJECT_DIR" add --all
 if [[ -n "$(git -C "$CMAKE_PROJECT_DIR" config user.name || true)" && \
       -n "$(git -C "$CMAKE_PROJECT_DIR" config user.email || true)" ]]; then
   if git -C "$CMAKE_PROJECT_DIR" -c commit.gpgsign=false commit --quiet -m 'chore: initialize project'; then
-    commit_status='已创建初始提交'
+    commit_status='Created the initial commit'
   else
-    commit_status='Git 已初始化且文件已暂存，但初始提交失败'
+    commit_status='Initialized Git and staged all files, but the initial commit failed'
   fi
 else
-  commit_status='Git 已初始化且文件已暂存；配置 user.name 和 user.email 后即可提交'
+  commit_status='Initialized Git and staged all files; configure user.name and user.email before committing'
 fi
 
 note ''
-note "项目 ${CMAKE_PROJECT_NAME} 创建完成：${CMAKE_PROJECT_DIR}"
+note "Created ${CMAKE_PROJECT_NAME} in ${CMAKE_PROJECT_DIR}"
 note "C++${CMAKE_CPP_STANDARD} | Google Test ${CMAKE_ENABLE_GTEST} | Benchmark ${CMAKE_ENABLE_BENCHMARK} | spdlog ${CMAKE_ENABLE_SPDLOG} | fmt ${CMAKE_ENABLE_FMT} | Eigen ${CMAKE_ENABLE_EIGEN}"
 note "$commit_status"
 note ''
-note '下一步：'
+note 'Next steps:'
 note "  cd ${CMAKE_PROJECT_DIR}"
 note '  cmake --build --preset debug'

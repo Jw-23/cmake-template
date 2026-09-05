@@ -1,28 +1,32 @@
 # @PROJECT_NAME@
 
-一个使用 CMake 与 CPM.cmake 的现代 C++ 项目。
+A modern C++ project powered by CMake and CPM.cmake.
 
-## 初始化配置
+## Generated configuration
 
-| 配置 | 值 |
+| Setting | Value |
 | --- | --- |
-| C++ 标准 | C++@CPP_STANDARD@ |
-| Google Test | @GTEST_ENABLED@ |
+| C++ standard | C++@CPP_STANDARD@ |
+| GoogleTest | @GTEST_ENABLED@ |
 | Google Benchmark | @BENCHMARK_ENABLED@ |
 | spdlog | @SPDLOG_ENABLED@ |
 | fmt | @FMT_ENABLED@ |
 | Eigen | @EIGEN_ENABLED@ |
 
-这些配置是默认值，仍可在配置阶段通过 `-DPROJECT_ENABLE_TESTING=ON/OFF`、
-`-DPROJECT_ENABLE_BENCHMARKS=ON/OFF`、`-DPROJECT_ENABLE_SPDLOG=ON/OFF`、
-`-DPROJECT_ENABLE_FMT=ON/OFF` 和 `-DPROJECT_ENABLE_EIGEN=ON/OFF` 覆盖。
-依赖版本会按照所选 C++ 标准自动选择，确保依赖自身也能用对应标准构建。
+These are defaults and can be overridden during configuration with
+`-DPROJECT_ENABLE_TESTING=ON/OFF`, `-DPROJECT_ENABLE_BENCHMARKS=ON/OFF`,
+`-DPROJECT_ENABLE_SPDLOG=ON/OFF`, `-DPROJECT_ENABLE_FMT=ON/OFF`, and
+`-DPROJECT_ENABLE_EIGEN=ON/OFF`. Compatible dependency versions are selected
+automatically for the configured C++ standard.
 
-## 构建
+## Build
 
-需要 CMake 3.24+、支持所选 C++ 标准的编译器、Git 和 Ninja。
-安装脚本已经执行过 Debug 配置，因此 `build/compile_commands.json` 可直接供
-clangd 使用；修改依赖选项后需要重新运行 `cmake --preset debug`。
+Requirements: CMake 3.24 or newer, Git, Ninja, and a compiler supporting the
+selected C++ standard.
+
+The installer has already configured the Debug preset, so
+`build/compile_commands.json` is ready for clangd. Re-run
+`cmake --preset debug` after changing dependency options.
 
 ```bash
 cmake --preset debug
@@ -30,17 +34,17 @@ cmake --build --preset debug
 ./build/debug/bin/@PROJECT_NAME@
 ```
 
-## 测试
+## Tests
 
-启用 Google Test 后：
+When GoogleTest is enabled:
 
 ```bash
 ctest --preset debug
 ```
 
-## Benchmark
+## Benchmarks
 
-启用 Google Benchmark 后，建议使用 Release 构建：
+When Google Benchmark is enabled, use a Release build for meaningful results:
 
 ```bash
 cmake --preset release
