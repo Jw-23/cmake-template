@@ -21,6 +21,8 @@
 ## 构建
 
 需要 CMake 3.24+、支持所选 C++ 标准的编译器、Git 和 Ninja。
+安装脚本已经执行过 Debug 配置，因此 `build/compile_commands.json` 可直接供
+clangd 使用；修改依赖选项后需要重新运行 `cmake --preset debug`。
 
 ```bash
 cmake --preset debug

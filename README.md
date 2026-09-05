@@ -19,8 +19,9 @@ bash <(curl -fsSL https://raw.githubusercontent.com/Jw-23/cmake-template/main/in
 - 是否启用 fmt；
 - 是否启用 Eigen。
 
-完成后，脚本会清除模板仓库历史，在新目录创建 `main` 分支，暂存全部文件，
-并在本机已配置 Git 用户名和邮箱时创建初始提交。
+完成后，脚本会自动配置 Debug 构建并生成 `build/compile_commands.json`，清除
+模板仓库历史，在新目录创建 `main` 分支，暂存全部文件，并在本机已配置 Git
+用户名和邮箱时创建初始提交。
 
 ## 无交互用法
 

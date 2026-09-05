@@ -9,4 +9,5 @@ static void benchmark_add(benchmark::State& state)
     }
 }
 
-BENCHMARK(benchmark_add);
+// Google Benchmark registers benchmarks through an internal global object.
+BENCHMARK(benchmark_add);  // NOLINT(cppcoreguidelines-avoid-non-const-global-variables,cppcoreguidelines-owning-memory)

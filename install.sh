@@ -80,6 +80,8 @@ prompt_boolean() {
 }
 
 command -v git >/dev/null 2>&1 || fail '未找到 git，请先安装 Git。'
+command -v cmake >/dev/null 2>&1 || fail '未找到 cmake，请先安装 CMake 3.24 或更高版本。'
+command -v ninja >/dev/null 2>&1 || fail '未找到 ninja，请先安装 Ninja。'
 
 while true; do
   prompt_value CMAKE_PROJECT_NAME '项目名称' 'my_project'
@@ -175,6 +177,11 @@ rm -f \
   "${CMAKE_PROJECT_DIR}/README.project.md.in" \
   "${CMAKE_PROJECT_DIR}/install.sh"
 
+note '正在配置 Debug 构建并生成 build/compile_commands.json ...'
+if ! cmake -S "$CMAKE_PROJECT_DIR" --preset debug; then
+  fail "CMake 配置失败。项目文件已保留在 ${CMAKE_PROJECT_DIR}，请检查上方错误。"
+fi
+
 if git -C "$CMAKE_PROJECT_DIR" init --initial-branch=main --quiet 2>/dev/null; then
   :
 else
@@ -202,5 +209,4 @@ note "$commit_status"
 note ''
 note '下一步：'
 note "  cd ${CMAKE_PROJECT_DIR}"
-note '  cmake --preset debug'
 note '  cmake --build --preset debug'
